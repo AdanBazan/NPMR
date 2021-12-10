@@ -1,9 +1,12 @@
 #!/bin/bash
 #Instalador de Nginx, php-fmp, mariadb
 
-#Revisiones previas
-#Verificacion que esté instalado yum y si nó lo instala.
 
+
+###################Revisiones previas ######################
+#Verificacion que esté instalado yum y si nó lo instala.
+echo "\tScript instalador"
+echo "\tRealizando pruebas de paquetes requeridos previamente"
 yum --version
 VIY=$(echo $?)
 if [ $VIY -ne 0 ]
@@ -12,9 +15,31 @@ then
         yum install dnf-utils -y
 fi
 
-dnf install wget tar curl -y
+dnf install wget tar curl bind-utils -y 
 
-##############Instalando Nginx
+################### Argumentos para validación
+
+echo -e "Cual es el nombre del dominio donde se ejecuta este script:"
+read DOMINIO
+
+################## Validación de información
+echo "Validando la información para el dominio $DOMINIO"
+CONSDOM=$(host ugto.mx | head -1)
+IPSERV=$(hostname -I)
+
+grep $IPSERV $CONSDOM
+CONSULTA=$(echo $?)
+
+if [ $CONSULTA -eq 0 ]
+then
+    echo "Se esta configurando el $DOMINIO con la IP $IPSERV"
+else
+    echo "Los parametros ingresados no coinciden con los registrados para este dominio"
+    exit 1
+fi
+
+######################### INSTALACION DE NGINX #########################
+echo "\t ------- Instalando Nginx"
 #Revisando que exista alguna versión previa.
 rpm -qa | grep nginx
 VIN=$(echo $?)
@@ -61,8 +86,9 @@ if [ $RSN -ne 0 ]
 then
         echo "Hay un problema con la ejecución de NGINX"
 fi
-##################### Instalando MariaDB
 
+##################### Instalando MariaDB ###########################
+echo "\t ------- Instalando MariaDB"
 #Verificador de versiones previas
 whereis mariadb | grep "mariadb "
 VMDB=$(echo $?)
@@ -77,7 +103,8 @@ systemctl start mariadb.service
 #Si deseas configurar MariaDB descomenta la siguiente línea, es interactiva la configuración:
 #mysql_secure_installation
 
-###################### Instalando php74
+###################### Instalando php74 ######################
+echo "\t ------- Instalando php7.4"
 #Validamos que esté instalado
 whereis php | grep "php "
 PVIP=$(echo $?)
@@ -131,7 +158,9 @@ fi
 systemctl start php-fpm
 systemctl restart nginx
 
-#################### Instalando Roudcube
+#################### Instalando Roudcube ####################
+echo "\t ------- Instalando Roudcube"
+
 curl https://roundcube.net/download/ > temp-rc.txt
 
 RVS=$(grep "Stable version" temp-rc.txt | awk -F "- " '{ print $2}' | awk -F "<" '{ print $1}')
