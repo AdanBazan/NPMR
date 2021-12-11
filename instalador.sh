@@ -5,8 +5,8 @@
 
 ###################Revisiones previas ######################
 #Verificacion que esté instalado yum y si nó lo instala.
-echo "\tScript instalador"
-echo "\tRealizando pruebas de paquetes requeridos previamente"
+echo -e "\tScript instalador"
+echo -e "\tRealizando pruebas de paquetes requeridos previamente"
 yum --version >> /dev/null
 VIY=$(echo $?)
 if [ $VIY -ne 0 ]
