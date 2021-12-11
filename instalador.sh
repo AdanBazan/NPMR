@@ -27,14 +27,14 @@ echo -n "Cual es el nombre del dominio donde se ejecuta este script: "
 read DOMINIO
 
 ################## Validación de información
-echo "Validando la información para el dominio $DOMINIO"
+echo -e "******* Validando la información para el dominio $DOMINIO"
 CONSDOM=$(host $DOMINIO )
 VCONSDOM=$(echo $?)
 IPSERV=$(hostname -I)
 
 if [ $VCONSDOM -ne 0 ]
 then
-        echo -e "El dominio $DOMINIO no se encuentra registrado"
+        echo -e "\n++++ El dominio $DOMINIO no se encuentra registrado"
         exit 1
 else
         echo -e "El dominio $DOMINIO si existe"
