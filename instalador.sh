@@ -7,7 +7,7 @@
 #Verificacion que esté instalado yum y si nó lo instala.
 echo "\tScript instalador"
 echo "\tRealizando pruebas de paquetes requeridos previamente"
-yum --version
+yum --version >> /dev/null
 VIY=$(echo $?)
 if [ $VIY -ne 0 ]
 then
@@ -15,7 +15,7 @@ then
         yum install dnf-utils -y
 fi
 
-dnf install wget tar curl bind-utils -y 
+dnf install wget tar curl bind-utils -y > /dev/null
 
 ################### Argumentos para validación
 
