@@ -54,7 +54,7 @@ else
                 echo -e "Se esta configurando el $DOMINIO con la IP $IPSERV"
         fi
 fi
-
+rm $CONSDOM
 ######################### INSTALACION DE NGINX #########################
 echo "\t ------- Instalando Nginx"
 #Revisando que exista alguna versión previa.
