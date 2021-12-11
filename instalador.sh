@@ -1,8 +1,6 @@
 #!/bin/bash
 #Instalador de Nginx, php-fmp, mariadb
 
-
-
 ###################Revisiones previas ######################
 #Verificacion que esté instalado yum y si nó lo instala.
 echo -e "\t#########################  Script instalador ########################"
@@ -28,22 +26,24 @@ read DOMINIO
 
 ################## Validación de información
 echo -e "\n******* Validando la información para el dominio $DOMINIO"
-CONSDOM=$(host $DOMINIO )
+CONSDOM=/tmp/consdom.txt
+host $DOMINIO > $CONSDOM
+grep "not found" $CONSDOM > /dev/null
 VCONSDOM=$(echo $?)
 IPSERV=$(hostname -I)
 
-if [ $VCONSDOM -ne 0 ]
+if [ $VCONSDOM -eq 0 ]
 then
         echo -e "++++ El dominio $DOMINIO no se encuentra registrado"
         exit 1
 else
         echo -e "El dominio $DOMINIO si existe"
-        grep $IPSERV $CONSDOM > /dev/null
+        grep "$IPSERV" $CONSDOM >> /dev/null
         CONSULTA=$(echo $?)
 
         if [ $CONSULTA -ne 0 ]
         then
-                IPDOM=$(echo $CONSDOM | awk '{ print $4 }')
+                IPDOM=$(cat $CONSDOM | head -1 | awk '{ print $4 }')
                 echo -e "++++ Error al validar la información"
                 echo -e "++++ Los parametros ingresados no coinciden con los registrados para este dominio"
                 echo -e "++++ El dominio $DOMINIO tiene asignada la IP $IPDOM"
