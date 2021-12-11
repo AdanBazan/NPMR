@@ -5,37 +5,54 @@
 
 ###################Revisiones previas ######################
 #Verificacion que esté instalado yum y si nó lo instala.
-echo -e "\tScript instalador"
-echo -e "\tRealizando pruebas de paquetes requeridos previamente"
+echo -e "\t#########################  Script instalador ########################"
+echo -e "\t######### Realizando pruebas de paquetes requeridos previamente #####"
+echo -e "\t#####################################################################\n"
+
+#Ejecucion y comprobacion de que esté instalado yum
 yum --version >> /dev/null
+#Validación de la ejecucion anterior
 VIY=$(echo $?)
 if [ $VIY -ne 0 ]
 then
-        #Instala utilidades
+        #Instala utilidades en caso de que no exista yum 
         yum install dnf-utils -y
 fi
-
+#Instala otros paquetes necesarios
 dnf install wget tar curl bind-utils -y > /dev/null
 
 ################### Argumentos para validación
 
-echo -e "Cual es el nombre del dominio donde se ejecuta este script:"
+echo -n "Cual es el nombre del dominio donde se ejecuta este script: "
 read DOMINIO
 
 ################## Validación de información
 echo "Validando la información para el dominio $DOMINIO"
-CONSDOM=$(host ugto.mx | head -1)
+CONSDOM=$(host $DOMINIO )
+VCONSDOM=$(echo $?)
 IPSERV=$(hostname -I)
 
-grep $IPSERV $CONSDOM
-CONSULTA=$(echo $?)
-
-if [ $CONSULTA -eq 0 ]
+if [ $VCONSDOM -ne 0 ]
 then
-    echo "Se esta configurando el $DOMINIO con la IP $IPSERV"
+        echo -e "El dominio $DOMINIO no se encuentra registrado"
+        exit 1
 else
-    echo "Los parametros ingresados no coinciden con los registrados para este dominio"
-    exit 1
+        echo -e "El dominio $DOMINIO si existe"
+        grep $IPSERV $CONSDOM > /dev/null
+        CONSULTA=$(echo $?)
+
+        if [ $CONSULTA -ne 0 ]
+        then
+                IPDOM=$(echo $CONSDOM | awk '{ print $4 }')
+                echo -e "++++ Error al validar la información"
+                echo -e "++++ Los parametros ingresados no coinciden con los registrados para este dominio"
+                echo -e "++++ El dominio $DOMINIO tiene asignada la IP $IPDOM"
+                echo -e "++++ El servidor donde se está ejecutando este Script es: $IPSERV"
+                exit 1
+        else
+                echo -e "Información correcta"
+                echo -e "Se esta configurando el $DOMINIO con la IP $IPSERV"
+        fi
 fi
 
 ######################### INSTALACION DE NGINX #########################
