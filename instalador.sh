@@ -1,4 +1,4 @@
-#!/bin/bash
+#!/bin/bash -x
 #Instalador de Nginx, php-fmp, mariadb
 
 ###################Revisiones previas ######################
@@ -56,7 +56,7 @@ fi
 rm $CONSDOM
 
 ######################### INSTALACION DE NGINX #########################
-echo -e "\t ------- Instalando Nginx"
+echo -e "\n\n\t ------- Instalando Nginx"
 sleep 2
 #Revisando que exista alguna versión previa.
 rpm -qa | grep nginx > /dev/null
@@ -106,7 +106,7 @@ then
 fi
 
 ##################### Instalando MariaDB ###########################
-echo -e "\t ------- Instalando MariaDB"
+echo -e "\n\n\t ------- Instalando MariaDB"
 sleep 2
 #Verificador de versiones previas
 whereis mariadb | grep "mariadb " > /dev/null
@@ -123,7 +123,7 @@ systemctl start mariadb.service
 #mysql_secure_installation
 
 ###################### Instalando php74 ######################
-echo "\t ------- Instalando php7.4"
+echo -e "\n\n\t ------- Instalando php7.4"
 sleep 2
 #Validamos que esté instalado
 whereis php | grep "php " > /dev/null
@@ -179,20 +179,20 @@ systemctl start php-fpm
 systemctl restart nginx
 
 #################### Instalando Roudcube ####################
-echo -e "\t ------- Instalando Roudcube"
+echo -e "\n\n\t ------- Instalando Roudcube"
 sleep 2
 
 TRC=/tmp/temp-rc.txt
 
-curl https://roundcube.net/download/ > $TRC
+curl https://roundcube.net/download/ > $TRC 
 
-RVS=$(grep "Stable version" temp-rc.txt | awk -F "- " '{ print $2}' | awk -F "<" '{ print $1}')
-RDVS=$(grep "1.5.0-complete.tar.gz" $TRC | awk -F "href=""" '{ print $2}' | awk -F " """ '{ print $1}' | tr -d '"')
+RVS=$(grep "Stable version" $TRC | awk -F "- " '{ print $2}' | awk -F "<" '{ print $1}')
+RDVS=$(grep "$RVS" $TRC | awk -F "href=""" '{ print $2}' | awk -F " """ '{ print $1}' | tr -d '"')
 
 wget $RDVS
 
 
-tar xzf roundcubemail-$RVS-complete.tar.gz
+tar xzf roundcubemail-$RVS-complete.tar.gz > /dev/null
 mv roundcubemail-$RVS /var/www/html/roundcubemail
 chown -R nginx:nginx /var/www/html/roundcubemail
 
@@ -238,6 +238,6 @@ EOF
 chown :nginx /var/lib/php/session/
 systemctl restart nginx php-fpm
 
-rm -rf roundcubemail-$RVS-complete.tar.gz temp-rc.txt $TRC
+rm -rf roundcube* $TRC
 
 echo "Instalación terminada"
