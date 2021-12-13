@@ -181,12 +181,16 @@ systemctl restart nginx
 #################### Instalando Roudcube ####################
 echo -e "\t ------- Instalando Roudcube"
 sleep 2
-curl https://roundcube.net/download/ > temp-rc.txt
+
+TRC=/tmp/temp-rc.txt
+
+curl https://roundcube.net/download/ > $TRC
 
 RVS=$(grep "Stable version" temp-rc.txt | awk -F "- " '{ print $2}' | awk -F "<" '{ print $1}')
-RDVS=$(grep "1.5.0-complete.tar.gz" temp-rc.txt | awk -F "href=""" '{ print $2}' | awk -F " """ '{ print $1}' | tr -d '"')
+RDVS=$(grep "1.5.0-complete.tar.gz" $TRC | awk -F "href=""" '{ print $2}' | awk -F " """ '{ print $1}' | tr -d '"')
 
 wget $RDVS
+
 
 tar xzf roundcubemail-$RVS-complete.tar.gz
 mv roundcubemail-$RVS /var/www/html/roundcubemail
@@ -234,6 +238,6 @@ EOF
 chown :nginx /var/lib/php/session/
 systemctl restart nginx php-fpm
 
-rm -rf roundcubemail-$RVS-complete.tar.gz temp-rc.txt
+rm -rf roundcubemail-$RVS-complete.tar.gz temp-rc.txt $TRC
 
 echo "Instalación terminada"
