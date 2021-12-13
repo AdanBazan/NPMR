@@ -120,7 +120,7 @@ fi
 systemctl enable mariadb.service
 systemctl start mariadb.service
 #Si deseas configurar MariaDB descomenta la siguiente línea, es interactiva la configuración:
-#mysql_secure_installation
+mysql_secure_installation
 
 ###################### Instalando php74 ######################
 echo -e "\n\n\t ------- Instalando php7.4"
