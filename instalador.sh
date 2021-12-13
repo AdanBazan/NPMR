@@ -3,10 +3,9 @@
 
 ###################Revisiones previas ######################
 #Verificacion que esté instalado yum y si nó lo instala.
-echo -e "\t#########################  Script instalador ########################"
-echo -e "\t######### Realizando pruebas de paquetes requeridos previamente #####"
+echo -e "\n\t#########################  Script instalador ########################"
 echo -e "\t#####################################################################\n"
-
+echo -e "\n\t######### Realizando pruebas de paquetes requeridos previamente #####\n"
 #Ejecucion y comprobacion de que esté instalado yum
 yum --version >> /dev/null
 #Validación de la ejecucion anterior
@@ -55,13 +54,15 @@ else
         fi
 fi
 rm $CONSDOM
+
 ######################### INSTALACION DE NGINX #########################
-echo "\t ------- Instalando Nginx"
+echo -e "\t ------- Instalando Nginx"
+sleep 2
 #Revisando que exista alguna versión previa.
-rpm -qa | grep nginx
+rpm -qa | grep nginx > /dev/null
 VIN=$(echo $?)
 #Revisión de repositorio nginx
-dnf repolist | grep nginx
+dnf repolist | grep nginx > /dev/null
 VIR=$(echo $?)
 if [ $VIN -ne 0 ]
 then
@@ -89,7 +90,7 @@ EOF
 
 fi
 #Instalacion de Nginx
-dnf install -y nginx
+dnf install -y nginx > /dev/null 
 #Inicio y habilitado persistente
 systemctl start nginx
 systemctl enable nginx
@@ -105,14 +106,15 @@ then
 fi
 
 ##################### Instalando MariaDB ###########################
-echo "\t ------- Instalando MariaDB"
+echo -e "\t ------- Instalando MariaDB"
+sleep 2
 #Verificador de versiones previas
-whereis mariadb | grep "mariadb "
+whereis mariadb | grep "mariadb " > /dev/null
 VMDB=$(echo $?)
 if [ $VMDB -ne 0 ]
 then
         #Instalando MariaDB
-        dnf -y install mariadb-server mariadb
+        dnf -y install mariadb-server mariadb > /dev/null
 fi
 #Habilitando y volviendo persistente el servicio de MariaDB
 systemctl enable mariadb.service
@@ -122,20 +124,21 @@ systemctl start mariadb.service
 
 ###################### Instalando php74 ######################
 echo "\t ------- Instalando php7.4"
+sleep 2
 #Validamos que esté instalado
-whereis php | grep "php "
+whereis php | grep "php " > /dev/null
 PVIP=$(echo $?)
 #Verificación de que exista el repositorio instalado
-dnf repolist | grep epel
+dnf repolist | grep epel > /dev/null
 PVIR=$(echo $?)
 
 if [ $PVIP -ne 0 ] && [ $PVIR -ne 0 ]
 then
         #Instalacion de repositorios
-        dnf install epel-release -y
-        dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm
-        dnf module install php:remi-7.4 -y
-        dnf install -y php php-fpm php-mcrypt php-cli php-gd php-curl php-xml php-mysql php-mbstring php-pspell php-imagick php-cgi php-ldap php-soap php-xsl php-zip php-common php-imap php-json php-bz2 php-intl php-gmp
+        dnf install epel-release -y > /dev/null
+        dnf install -y https://rpms.remirepo.net/enterprise/remi-release-8.rpm > /dev/null
+        dnf module install php:remi-7.4 -y > /dev/null
+        dnf install -y php php-fpm php-mcrypt php-cli php-gd php-curl php-xml php-mysql php-mbstring php-pspell php-imagick php-cgi php-ldap php-soap php-xsl php-zip php-common php-imap php-json php-bz2 php-intl php-gmp > /dev/null
 fi
 #Habilitar y volver persistente el servicio
 systemctl start php-fpm
@@ -176,8 +179,8 @@ systemctl start php-fpm
 systemctl restart nginx
 
 #################### Instalando Roudcube ####################
-echo "\t ------- Instalando Roudcube"
-
+echo -e "\t ------- Instalando Roudcube"
+sleep 2
 curl https://roundcube.net/download/ > temp-rc.txt
 
 RVS=$(grep "Stable version" temp-rc.txt | awk -F "- " '{ print $2}' | awk -F "<" '{ print $1}')
